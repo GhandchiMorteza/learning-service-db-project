@@ -4,11 +4,12 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import './index.css'
 import LandingPage from './components/pages/LandingPage.tsx';
 import LoginPage from './components/pages/LoginPage.tsx';
 import SignupPage from './components/pages/SignupPage.tsx';
-import EditProfilePage from './components/pages/EditProfilePage.tsx';
+
+import './index.css'
+import AddInfoPage from './components/pages/AddInfoPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -24,8 +25,8 @@ const router = createBrowserRouter([
     element: <SignupPage/>
   },
   {
-    path: "/editprofile",
-    element: <EditProfilePage />
+    path: "/addinfo",
+    element: <AddInfoPage />
   }
 ]);
 
