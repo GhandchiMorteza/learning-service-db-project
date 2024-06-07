@@ -7,7 +7,7 @@
 html {
   font-family: IRANSansX;
 }
-
+/* 
 input::-webkit-input-placeholder {
   direction: rtl;
   text-align: right;
@@ -16,4 +16,4 @@ input::-webkit-input-placeholder {
 input::placeholder {
   direction: rtl;
   text-align: right;
-}
+} */
