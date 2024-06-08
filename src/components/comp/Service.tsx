@@ -24,7 +24,6 @@ export default function Service() {
         }).toString();
         
         const url = `http://localhost:3005/allcourse?${queryParams}`;
-        console.log("Constructed URL:", url);  // Check what URL is being constructed
         const response = await fetch(url);
         
         
@@ -33,7 +32,6 @@ export default function Service() {
         }
 
         const data = await response.json();
-        console.log(data);
         
         setData(data);
         setLoading(false);

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
+  FormDescription,
   // FormDescription,
   FormField,
   FormItem,
@@ -13,17 +14,22 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react"
+
 
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "نام کاربری حداقل باید دارای 2 کاراکتر باشد",
   }),
-  password: z.string().min(8, {
-    message: "پسورد حداقل 8 حرفی است"
+  password: z.string().min(2, {
+    message: "پسورد حداقل 2 حرفی است"
   })
 })
 
 export function LoginForm() {
+    const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState(null);
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
@@ -34,27 +40,46 @@ export function LoginForm() {
     })
    
     // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
-      // Do something with the form values.
-      // ✅ This will be type-safe and validated.
-      console.log(values)
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+      try {
+        const response = await fetch('http://localhost:3005/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        })
+  
+        if (!response.ok) {
+          const data = await response.json();
+          console.log(data);
+        
+          throw new Error(data.error);
+        }
+  
+        const data = await response.json()
+        localStorage.setItem('userData', JSON.stringify(data));
+        navigate('/');
+        console.log(data)
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error)
+        setErrorMessage(error.message);
+      }
     }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="-8">
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
         <FormField
           control={form.control}
           name="username"
           render={({ field }) => (
             <FormItem className="mb-2">
-              <FormLabel>نام کاربری</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="نام کاربری خود را وارد کنید" {...field} />
+                <Input placeholder="Enter your username" {...field} />
               </FormControl>
-              {/* <FormDescription>
-                این نام برای نمایش عموم گذاشته می‌شود
-              </FormDescription> */}
               <FormMessage />
             </FormItem>
           )}
@@ -64,17 +89,20 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem className="mb-12">
-              <FormLabel>رمز عبور</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="رمز عبور خود را وارد کنید" {...field} dir="auto"/>
+                <Input placeholder="Enter your password" {...field} dir="auto"/>
               </FormControl>
-              {/* <FormDescription>
-                این نام برای نمایش عموم گذاشته می‌شود
-              </FormDescription> */}
+              <FormDescription>
+                <Link to="/signup">
+            <p>Do you want to singup instead?</p>
+          </Link>
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <div className="flex justify-center items-center">
           <Button type="submit" className="px-10">ورود</Button>
         </div>

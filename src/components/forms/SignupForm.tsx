@@ -13,56 +13,105 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { useNavigate } from "react-router-dom"
+import { useState } from "react"
 
 const formSchema = z.object({
   firstname: z.string().min(2, {
-    message: "نام حداقل باید دارای 2 کاراکتر باشد",
+    message: "First name must be at least 2 characters long",
   }),
   lastname: z.string().min(2, {
-    message: "نام خانوادگی حداقل باید دارای 2 کاراکتر باشد",
+    message: "Last name must be at least 2 characters long",
   }),
   username: z.string().min(2, {
-    message: "نام کاربری حداقل باید دارای 2 کاراکتر باشد",
+    message: "Username must be at least 2 characters long",
+  }),
+  email: z.string().email({
+    message: "Invalid email address",
   }),
   password: z.string().min(8, {
-    message: "پسورد حداقل 8 حرفی است"
+    message: "Password must be at least 8 characters long"
   })
 })
 
 export function SignupForm() {
+  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState(null);
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
-      defaultValues: {
-        firstname: "",
-        lastname: "",
-        username: "",
-        password: ""
-      },
     })
    
     // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
-      // Do something with the form values.
-      // ✅ This will be type-safe and validated.
+    async function onSubmit(values: z.infer<typeof formSchema>) {
       console.log(values)
+
+    try {
+      const response = await fetch('http://localhost:3005/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: values.username,
+          password: values.password,
+          firstname: values.firstname,
+          lastname: values.lastname,
+          email: values.email,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data);
+        
+        throw new Error(data.error);
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      // localStorage.setItem('userData', JSON.stringify(data));
+
+      const response2 = await fetch('http://localhost:3005/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      })
+
+      if (!response2.ok) {
+        const data = await response2.json();
+        console.log(data);
+      
+        throw new Error(data.error);
+      }
+
+      const data2 = await response2.json()
+      localStorage.setItem('userData', JSON.stringify(data2));
+      console.log(data2)
+      navigate('/');
+
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+      setErrorMessage(error.message);
+    }
     }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="-8">
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
       <FormField
           control={form.control}
           name="firstname"
           render={({ field }) => (
             <FormItem className="mb-4">
-              <FormLabel>نام</FormLabel>
+              <FormLabel>First Name</FormLabel>
               <FormControl>
-                <Input placeholder="نام خود را وارد کنید" {...field} />
+                <Input placeholder="Enter your first name" {...field} />
               </FormControl>
-              {/* <FormDescription>
-                این نام برای نمایش عموم گذاشته می‌شود
-              </FormDescription> */}
               <FormMessage />
             </FormItem>
           )}
@@ -72,13 +121,10 @@ export function SignupForm() {
           name="lastname"
           render={({ field }) => (
             <FormItem className="mb-4">
-              <FormLabel>نام خانوادگی</FormLabel>
+              <FormLabel>Last Name</FormLabel>
               <FormControl>
-                <Input placeholder="نام خانوادگی خود را وارد کنید" {...field} />
+                <Input placeholder="Enter your last name" {...field} />
               </FormControl>
-              {/* <FormDescription>
-                این نام برای نمایش عموم گذاشته می‌شود
-              </FormDescription> */}
               <FormMessage />
             </FormItem>
           )}
@@ -88,13 +134,23 @@ export function SignupForm() {
           name="username"
           render={({ field }) => (
             <FormItem className="mb-4">
-              <FormLabel>نام کاربری</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="نام کاربری دلخواه خود را وارد کنید" {...field} />
+                <Input placeholder="Enter your desired username" {...field} />
               </FormControl>
-              {/* <FormDescription>
-                این نام برای نمایش عموم گذاشته می‌شود
-              </FormDescription> */}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem className="mb-4">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your email" {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -104,13 +160,10 @@ export function SignupForm() {
           name="password"
           render={({ field }) => (
             <FormItem className="mb-12">
-              <FormLabel>رمز عبور</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="رمز عبور دلخواه خود را وارد کنید" {...field} dir="auto"/>
+                <Input placeholder="Enter your desired password" {...field} dir="auto"/>
               </FormControl>
-              {/* <FormDescription>
-                این نام برای نمایش عموم گذاشته می‌شود
-              </FormDescription> */}
               <FormMessage />
             </FormItem>
           )}
