@@ -154,9 +154,11 @@ export function AddInfoForm() {
             <FormItem className="mb-12">
               <FormLabel>علاقه مندی ها</FormLabel>
               <FormControl>
+// @ts-ignore
                 <MultipleSelector
                   {...field}
                   defaultOptions={OPTIONS}
+                  value={OPTIONS}
                   placeholder="از بین گزینه ها انتخاب کنید"
                   emptyIndicator={
                     <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">

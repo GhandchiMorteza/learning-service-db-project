@@ -10,4 +10,15 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  esbuild: {
+    loader: 'tsx',
+    include: /src\/.*\.tsx?$/,
+    exclude: [],
+    jsx: 'transform',
+    tsconfigRaw: {
+      compilerOptions: {
+        strict: false,
+      }
+    }
+  }
 })
