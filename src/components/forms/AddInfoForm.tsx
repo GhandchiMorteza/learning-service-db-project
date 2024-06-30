@@ -1,8 +1,8 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -11,8 +11,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 import {
   Select,
@@ -20,8 +20,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import MultipleSelector, { Option } from "../ui/MultipleSelector"
+} from '@/components/ui/select';
 
 const optionSchema = z.object({
   label: z.string(),
@@ -30,69 +29,60 @@ const optionSchema = z.object({
 });
 
 const formSchema = z.object({
-  sex: z
-    .string({
-      required_error: "لطفا جنسیت خود را انتخاب کنید",
-    }),
+  sex: z.string({
+    required_error: 'Please select your gender',
+  }),
   address: z.string().min(5, {
-    message: "آدرس حداقل باید دارای 5 کاراکتر باشد",
+    message: 'Address must be at least 5 characters long',
   }),
   birthdate: z.string().min(5, {
-    message: "تاریخ تولد حداقل باید دارای 5 کاراکتر باشد",
+    message: 'Birthdate must be at least 5 characters long',
   }),
   description: z.string().min(5, {
-    message: "تاریخ تولد حداقل باید دارای 5 کاراکتر باشد",
+    message: 'Description must be at least 5 characters long',
   }),
   number: z.string().min(11, {
-    message: "تاریخ تولد حداقل باید دارای 11 کاراکتر باشد",
+    message: 'Number must be at least 11 characters long',
   }),
-  interests:  z.array(optionSchema).min(1),
-})
-
-const OPTIONS: Option[] = [
-  { label: 'نکست', value: 'نکست' },
-  { label: 'ریکت', value: 'ریکت' },
-  { label: 'ریمیکس', value: 'ریمیکس' },
-  { label: 'ویت', value: 'ویت' },
-  { label: 'ناکست', value: 'ناکست' },
-  { label: 'ویو', value: 'ویو' },
-];
+  interests: z.array(optionSchema).min(1),
+});
 
 export function AddInfoForm() {
-    // 1. Define your form.
-    const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-    })
-   
-    // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
-      // Do something with the form values.
-      // ✅ This will be type-safe and validated.
-      console.log(values)
-    }
+  // as { data: Video }
 
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
+
+  // 2. Define a submit handler.
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+  }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="-8 text-left">
         <FormField
           control={form.control}
           name="sex"
           render={({ field }) => (
-            <FormItem dir="rtl" className="mb-3">
-              <FormLabel>جنسیت</FormLabel>
+            <FormItem className="mb-3">
+              <FormLabel>Sex</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl dir="rtl">
+                <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="جنسیت خود را انتخاب کنید" />
+                    <SelectValue placeholder="Select your sex" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent dir="rtl">
-                  <SelectItem value="مرد">مرد</SelectItem>
-                  <SelectItem value="زن">زن</SelectItem>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
-            </FormItem>    
+            </FormItem>
           )}
         />
         <FormField
@@ -100,9 +90,12 @@ export function AddInfoForm() {
           name="address"
           render={({ field }) => (
             <FormItem className="mb-3">
-              <FormLabel>آدرس محل سکونت</FormLabel>
+              <FormLabel>Residential Address</FormLabel>
               <FormControl>
-                <Input placeholder="آدرس محل سکونت خود را وارد کنید" {...field} />
+                <Input
+                  placeholder="Enter your residential address"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -113,9 +106,9 @@ export function AddInfoForm() {
           name="birthdate"
           render={({ field }) => (
             <FormItem className="mb-3">
-              <FormLabel>تاریخ تولد</FormLabel>
+              <FormLabel>Birth Date</FormLabel>
               <FormControl>
-                <Input placeholder="تاریخ تولد خود را وارد کنید" {...field} />
+                <Input placeholder="Enter your birth date" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -126,9 +119,9 @@ export function AddInfoForm() {
           name="description"
           render={({ field }) => (
             <FormItem className="mb-3">
-              <FormLabel>درباره</FormLabel>
+              <FormLabel>About</FormLabel>
               <FormControl>
-                <Input placeholder="درباره خود بنویسید" {...field} />
+                <Input placeholder="Write about yourself" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -139,9 +132,9 @@ export function AddInfoForm() {
           name="number"
           render={({ field }) => (
             <FormItem className="mb-3">
-              <FormLabel>شماره تلفن</FormLabel>
+              <FormLabel>Phone Number</FormLabel>
               <FormControl>
-                <Input placeholder="شماره تلفن خود را وارد کنید" {...field} />
+                <Input placeholder="Enter your phone number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -151,33 +144,30 @@ export function AddInfoForm() {
           control={form.control}
           name="interests"
           render={({ field }) => (
-            <FormItem className="mb-12">
-              <FormLabel>علاقه مندی ها</FormLabel>
-              <FormControl>
-// @ts-ignore
-                <MultipleSelector
-                  {...field}
-                  defaultOptions={OPTIONS}
-                  value={OPTIONS}
-                  placeholder="از بین گزینه ها انتخاب کنید"
-                  emptyIndicator={
-                    <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                      نتیجه ای پیدا نشد
-                    </p>
-                  }
-                />
-              </FormControl>
+            <FormItem className="mb-3">
+              <FormLabel>interests</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your interests" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="vue">Vue</SelectItem>
+                  <SelectItem value="next">Next</SelectItem>
+                  <SelectItem value="react">React</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
         />
         <div className="flex justify-center items-center">
-          <Button type="submit" className="px-10">ثبت اطلاعات</Button>
+          <Button type="submit" className="px-10">
+            Submit Information
+          </Button>
         </div>
-        
       </form>
     </Form>
-  )
+  );
 }
-
-

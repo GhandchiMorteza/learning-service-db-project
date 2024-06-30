@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 interface Course {
   level: string;
   name: string;
   price: string;
   service_id: string;
+  service_type: number;
   user_id: string;
 }
 
 export default function Service() {
-  
   const [data, setData] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,19 +21,19 @@ export default function Service() {
         // Define the order parameters
         const queryParams = new URLSearchParams({
           'order[column]': 'price',
-          'order[direction]': 'asc'
+          'order[direction]': 'asc',
         }).toString();
-        
-        const url = `http://localhost:3005/allcourse?${queryParams}`;
+
+        const url = `http://109.120.135.54:3005/allcourse?${queryParams}`;
         const response = await fetch(url);
-        
-        
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
 
         const data = await response.json();
-        
+        console.log(data);
+
         setData(data);
         setLoading(false);
       } catch (error) {
@@ -53,26 +54,40 @@ export default function Service() {
   }
 
   return (
-    <section id="Projects"
-    className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5">
-        {data.map((course, index) => (
-          <div key={index} className="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
+    <section
+      id="Projects"
+      className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5"
+    >
+      {data.map((course, index) => (
+        <Link to={`/course/${course.service_type}/${course.service_id}`}>
+          <div
+            key={index}
+            className="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl"
+          >
             <a href="#">
-              <img src="/course.jpg"
-                  alt={course.name} className="h-80 w-72 object-cover rounded-t-xl" />
+              <img
+                src="/course.jpg"
+                alt={course.name}
+                className="h-80 w-72 object-cover rounded-t-xl"
+              />
               <div className="px-4 py-3 w-72">
-                <span className="text-gray-400 mr-3 uppercase text-xs">{course.level}</span>
-                <p className="text-lg font-bold text-black truncate block capitalize">{course.name}</p>
+                <span className="text-gray-400 mr-3 uppercase text-xs">
+                  {course.level}
+                </span>
+                <p className="text-lg font-bold text-black truncate block capitalize">
+                  {course.name}
+                </p>
                 <div className="flex items-center">
-                  <p className="text-lg font-semibold text-black cursor-auto my-3">${course.price}</p>
-                  <div className="ml-auto">
-                    {/* left elements */}
-                  </div>
+                  <p className="text-lg font-semibold text-black cursor-auto my-3">
+                    ${course.price}
+                  </p>
+                  <div className="ml-auto">{/* left elements */}</div>
                 </div>
               </div>
             </a>
           </div>
-        ))}
+        </Link>
+      ))}
     </section>
   );
 }

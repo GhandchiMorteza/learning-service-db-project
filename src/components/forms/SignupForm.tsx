@@ -1,8 +1,8 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -11,43 +11,43 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { useNavigate } from "react-router-dom"
-import { useState } from "react"
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const formSchema = z.object({
   firstname: z.string().min(2, {
-    message: "First name must be at least 2 characters long",
+    message: 'First name must be at least 2 characters long',
   }),
   lastname: z.string().min(2, {
-    message: "Last name must be at least 2 characters long",
+    message: 'Last name must be at least 2 characters long',
   }),
   username: z.string().min(2, {
-    message: "Username must be at least 2 characters long",
+    message: 'Username must be at least 2 characters long',
   }),
   email: z.string().email({
-    message: "Invalid email address",
+    message: 'Invalid email address',
   }),
   password: z.string().min(8, {
-    message: "Password must be at least 8 characters long"
-  })
-})
+    message: 'Password must be at least 8 characters long',
+  }),
+});
 
 export function SignupForm() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState(null);
-    // 1. Define your form.
-    const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-    })
-   
-    // 2. Define a submit handler.
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-      console.log(values)
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
+
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
 
     try {
-      const response = await fetch('http://localhost:3005/signup', {
+      const response = await fetch('http://109.120.135.54:3005/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export function SignupForm() {
       if (!response.ok) {
         const data = await response.json();
         console.log(data);
-        
+
         throw new Error(data.error);
       }
 
@@ -73,37 +73,38 @@ export function SignupForm() {
 
       // localStorage.setItem('userData', JSON.stringify(data));
 
-      const response2 = await fetch('http://localhost:3005/login', {
+      const response2 = await fetch('http://109.120.135.54:3005/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
-      })
+        body: JSON.stringify({
+          username: values.username,
+          password: values.password,
+        }),
+      });
 
       if (!response2.ok) {
         const data = await response2.json();
         console.log(data);
-      
+
         throw new Error(data.error);
       }
 
-      const data2 = await response2.json()
+      const data2 = await response2.json();
       localStorage.setItem('userData', JSON.stringify(data2));
-      console.log(data2)
+      console.log(data2);
       navigate('/');
-
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
       setErrorMessage(error.message);
     }
-    }
+  }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="-8">
-      {errorMessage && <div className="error-message">{errorMessage}</div>}
-      <FormField
+      <form onSubmit={form.handleSubmit(onSubmit)} className="-8 text-left">
+        <FormField
           control={form.control}
           name="firstname"
           render={({ field }) => (
@@ -162,17 +163,26 @@ export function SignupForm() {
             <FormItem className="mb-12">
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your desired password" {...field} dir="auto"/>
+                <Input
+                  placeholder="Enter your desired password"
+                  {...field}
+                  dir="auto"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+        {errorMessage && (
+          <div className="error-message m-10">{errorMessage}</div>
+        )}
+
         <div className="flex justify-center items-center">
-          <Button type="submit" className="px-10">ثبت نام</Button>
+          <Button type="submit" className="px-10">
+            Sign up
+          </Button>
         </div>
-        
       </form>
     </Form>
-  )
+  );
 }
